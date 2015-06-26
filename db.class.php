@@ -15,7 +15,7 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+/*php5.4 ver by abbychau*/
 
 class DB {
   // initial connection
@@ -36,13 +36,13 @@ class DB {
   public static $throw_exception_on_nonsql_error = false;
   public static $nested_transactions = false;
   public static $usenull = true;
-  public static $ssl = array('key' => '', 'cert' => '', 'ca_cert' => '', 'ca_path' => '', 'cipher' => '');
-  public static $connect_options = array(MYSQLI_OPT_CONNECT_TIMEOUT => 30);
+  public static $ssl = ['key' => '', 'cert' => '', 'ca_cert' => '', 'ca_path' => '', 'cipher' => ''];
+  public static $connect_options = [MYSQLI_OPT_CONNECT_TIMEOUT => 30];
   
   // internal
   protected static $mdb = null;
-  public static $variables_to_sync = array('param_char', 'named_param_seperator', 'success_handler', 'error_handler', 'throw_exception_on_error',
-    'nonsql_error_handler', 'throw_exception_on_nonsql_error', 'nested_transactions', 'usenull', 'ssl', 'connect_options');
+  public static $variables_to_sync = ['param_char', 'named_param_seperator', 'success_handler', 'error_handler', 'throw_exception_on_error',
+    'nonsql_error_handler', 'throw_exception_on_nonsql_error', 'nested_transactions', 'usenull', 'ssl', 'connect_options'];
   
   public static function getMDB() {
     $mdb = DB::$mdb;
@@ -56,48 +56,9 @@ class DB {
     
     return $mdb;
   }
-  
-  // yes, this is ugly. __callStatic() only works in 5.3+
-  public static function get() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'get'), $args); }
-  public static function disconnect() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'disconnect'), $args); }
-  public static function query() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'query'), $args); }
-  public static function queryFirstRow() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'queryFirstRow'), $args); }
-  public static function queryOneRow() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'queryOneRow'), $args); }
-  public static function queryAllLists() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'queryAllLists'), $args); }
-  public static function queryFullColumns() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'queryFullColumns'), $args); }
-  public static function queryFirstList() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'queryFirstList'), $args); }
-  public static function queryOneList() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'queryOneList'), $args); }
-  public static function queryFirstColumn() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'queryFirstColumn'), $args); }
-  public static function queryOneColumn() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'queryOneColumn'), $args); }
-  public static function queryFirstField() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'queryFirstField'), $args); }
-  public static function queryOneField() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'queryOneField'), $args); }
-  public static function queryRaw() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'queryRaw'), $args); }
-  public static function queryRawUnbuf() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'queryRawUnbuf'), $args); }
-  
-  public static function insert() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'insert'), $args); }
-  public static function insertIgnore() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'insertIgnore'), $args); }
-  public static function insertUpdate() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'insertUpdate'), $args); }
-  public static function replace() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'replace'), $args); }
-  public static function update() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'update'), $args); }
-  public static function delete() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'delete'), $args); }
-  
-  public static function insertId() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'insertId'), $args); }
-  public static function count() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'count'), $args); }
-  public static function affectedRows() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'affectedRows'), $args); }
-  
-  public static function useDB() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'useDB'), $args); }
-  public static function startTransaction() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'startTransaction'), $args); }
-  public static function commit() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'commit'), $args); }
-  public static function rollback() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'rollback'), $args); }
-  public static function tableList() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'tableList'), $args); }
-  public static function columnList() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'columnList'), $args); }
-  
-  public static function sqlEval() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'sqlEval'), $args); }
-  public static function nonSQLError() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'nonSQLError'), $args); }
-  
-  public static function serverVersion() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'serverVersion'), $args); }
-  public static function transactionDepth() { $args = func_get_args(); return call_user_func_array(array(DB::getMDB(), 'transactionDepth'), $args); }
-  
+  public static function __callStatic($name, $args){
+	  return call_user_func_array([DB::getMDB(), $name], $args);
+  }
   
   public static function debugMode($handler = true) { 
     DB::$success_handler = $handler;
@@ -125,8 +86,8 @@ class MeekroDB {
   public $throw_exception_on_nonsql_error = false;
   public $nested_transactions = false;
   public $usenull = true;
-  public $ssl = array('key' => '', 'cert' => '', 'ca_cert' => '', 'ca_path' => '', 'cipher' => '');
-  public $connect_options = array(MYSQLI_OPT_CONNECT_TIMEOUT => 30);
+  public $ssl = ['key' => '', 'cert' => '', 'ca_cert' => '', 'ca_path' => '', 'cipher' => ''];
+  public $connect_options = [MYSQLI_OPT_CONNECT_TIMEOUT => 30];
   
   // internal
   public $internal_mysql = null;
@@ -314,9 +275,9 @@ class MeekroDB {
     return call_user_func_array(array($this, 'query'), $args);
   }
   
-  public function insertOrReplace($which, $table, $datas, $options=array()) {
+  public function insertOrReplace($which, $table, $datas, $options=[]) {
     $datas = unserialize(serialize($datas)); // break references within array
-    $keys = $values = array();
+    $keys = $values = [];
     
     if (isset($datas[0]) && is_array($datas[0])) {
       $var = '%ll?';
@@ -356,7 +317,7 @@ class MeekroDB {
   }
   
   public function insert($table, $data) { return $this->insertOrReplace('INSERT', $table, $data); }
-  public function insertIgnore($table, $data) { return $this->insertOrReplace('INSERT', $table, $data, array('ignore' => true)); }
+  public function insertIgnore($table, $data) { return $this->insertOrReplace('INSERT', $table, $data, ['ignore' => true]); }
   public function replace($table, $data) { return $this->insertOrReplace('REPLACE', $table, $data); }
   
   public function insertUpdate() {
@@ -375,7 +336,7 @@ class MeekroDB {
     if (is_array($args[0])) $update = $args[0];
     else $update = $args;
     
-    return $this->insertOrReplace('INSERT', $table, $data, array('update' => $update)); 
+    return $this->insertOrReplace('INSERT', $table, $data, ['update' => $update]); 
   }
   
   public function delete() {
@@ -413,7 +374,7 @@ class MeekroDB {
     $sql = trim(strval(array_shift($args)));
     $args_all = $args;
     
-    if (count($args_all) == 0) return array($sql);
+    if (count($args_all) == 0) return [$sql];
       
     $param_char_length = strlen($this->param_char);
     $named_seperator_length = strlen($this->named_param_seperator);
@@ -442,7 +403,7 @@ class MeekroDB {
     
     // generate list of all MeekroDB variables in our query, and their position
     // in the form "offset => variable", sorted by offsets
-    $posList = array();
+    $posList = [];
     foreach ($types as $type) {
       $lastPos = 0;
       while (($pos = strpos($sql, $type, $lastPos)) !== false) {
@@ -454,8 +415,8 @@ class MeekroDB {
     
     ksort($posList);
     
-    // for each MeekroDB variable, substitute it with array(type: i, value: 53) or whatever
-    $chunkyQuery = array(); // preparsed query
+    // for each MeekroDB variable, substitute it with [type: i, value: 53] or whatever
+    $chunkyQuery = []; // preparsed query
     $pos_adj = 0; // how much we've added or removed from the original sql string
     foreach ($posList as $pos => $type) {
       $type = substr($type, $param_char_length); // variable, without % in front of it
@@ -496,7 +457,7 @@ class MeekroDB {
         $preparsed_sql = call_user_func_array(array($this, 'preparseQueryParams'), $clause_args);
         $chunkyQuery = array_merge($chunkyQuery, $preparsed_sql);  
       } else {
-        $chunkyQuery[] = array('type' => $type, 'value' => $arg);
+        $chunkyQuery[] = ['type' => $type, 'value' => $arg];
       }
       
       $sql = substr($sql, $new_pos_back + $arg_number_length);
@@ -534,7 +495,7 @@ class MeekroDB {
       }
     } else if ($type == 'doublelist') {
       if (is_array($value) && array_values($value) === $value && is_array($value[0])) {
-        $cleanvalues = array();
+        $cleanvalues = [];
         foreach ($value as $subvalue) {
           $cleanvalues[] = $this->sanitize($subvalue, 'list');
         }
@@ -545,7 +506,7 @@ class MeekroDB {
       }
     } else if ($type == 'hash') {
       if (is_array($value)) {
-        $pairs = array();
+        $pairs = [];
         foreach ($value as $k => $v) {
           $pairs[] = $this->formatTableName($k) . '=' . $this->sanitize($v);
         }
@@ -575,7 +536,7 @@ class MeekroDB {
     $chunkyQuery = call_user_func_array(array($this, 'preparseQueryParams'), $args);
     
     $query = '';
-    $array_types = array('ls', 'li', 'ld', 'lb', 'll', 'lt', 'l?', 'll?', 'hc', 'ha', 'ho');
+    $array_types = ['ls', 'li', 'ld', 'lb', 'll', 'lt', 'l?', 'll?', 'hc', 'ha', 'ho'];
     
     foreach ($chunkyQuery as $chunk) {
       if (is_string($chunk)) {
@@ -596,7 +557,7 @@ class MeekroDB {
       else if ($type == 'd') $result = doubleval($arg);
       else if ($type == 'b') $result = $this->formatTableName($arg);
       else if ($type == 'l') $result = $arg;
-      else if ($type == 'ss') $result = $this->escape("%" . str_replace(array('%', '_'), array('\%', '\_'), $arg) . "%");
+      else if ($type == 'ss') $result = $this->escape("%" . str_replace(['%', '_'], ['\%', '\_'], $arg) . "%");
       else if ($type == 't') $result = $this->escape($this->parseTS($arg)); 
       
       else if ($type == 'ls') $result = array_map(array($this, 'escape'), $arg);
@@ -707,10 +668,10 @@ class MeekroDB {
 
     if ($row_type == 'raw' || !($result instanceof MySQLi_Result)) return $result;
 
-    $return = array();
+    $return = [];
 
     if ($full_names) {
-      $infos = array();
+      $infos = [];
       foreach ($result->fetch_fields() as $info) {
         if (strlen($info->table)) $infos[] = $info->table . '.' . $info->name;
         else $infos[] = $info->name;
@@ -751,7 +712,7 @@ class MeekroDB {
   public function queryFirstColumn() { 
     $args = func_get_args();
     $results = call_user_func_array(array($this, 'queryAllLists'), $args);
-    $ret = array();
+    $ret = [];
     
     if (!count($results) || !count($results[0])) return $ret;
     
@@ -766,7 +727,7 @@ class MeekroDB {
     $args = func_get_args();
     $column = array_shift($args);
     $results = call_user_func_array(array($this, 'query'), $args);
-    $ret = array();
+    $ret = [];
     
     if (!count($results) || !count($results[0])) return $ret;
     if ($column === null) {
@@ -807,7 +768,7 @@ class MeekroDB {
 class WhereClause {
   public $type = 'and'; //AND or OR
   public $negate = false;
-  public $clauses = array();
+  public $clauses = [];
   
   function __construct($type) {
     $type = strtolower($type);
@@ -822,7 +783,7 @@ class WhereClause {
     if ($sql instanceof WhereClause) {
       $this->clauses[] = $sql;
     } else {
-      $this->clauses[] = array('sql' => $sql, 'args' => $args);
+      $this->clauses[] = ['sql' => $sql, 'args' => $args];
     }
   }
   
@@ -852,10 +813,10 @@ class WhereClause {
   }
   
   function textAndArgs() {
-    $sql = array();
-    $args = array();
+    $sql = [];
+    $args = [];
     
-    if (count($this->clauses) == 0) return array('(1)', $args);
+    if (count($this->clauses) == 0) return ['(1)', $args];
     
     foreach ($this->clauses as $clause) {
       if ($clause instanceof WhereClause) { 
@@ -873,7 +834,7 @@ class WhereClause {
     else $sql = implode(' OR ', $sql);
     
     if ($this->negate) $sql = '(NOT ' . $sql . ')';
-    return array($sql, $args);
+    return [$sql, $args];
   }
   
   // backwards compatability
@@ -920,7 +881,7 @@ class DBHelper {
   public static function verticalSlice($array, $field, $keyfield = null) {
     $array = (array) $array;
     
-    $R = array();
+    $R = [];
     foreach ($array as $obj) {
       if (! array_key_exists($field, $obj)) die("verticalSlice: array doesn't have requested field\n");
       
@@ -944,7 +905,7 @@ class DBHelper {
     $array = array_shift($fields);
     $array = (array) $array;
     
-    $R = array();
+    $R = [];
     foreach ($array as $obj) {
       $target =& $R;
       
