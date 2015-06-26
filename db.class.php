@@ -1,23 +1,7 @@
 <?php
-	/*
-		Copyright (C) 2008-2012 Sergey Tsalkov (stsalkov@gmail.com)
-		
-		This program is free software: you can redistribute it and/or modify
-		it under the terms of the GNU Lesser General Public License as published by
-		the Free Software Foundation, either version 3 of the License, or
-		(at your option) any later version.
-		
-		This program is distributed in the hope that it will be useful,
-		but WITHOUT ANY WARRANTY; without even the implied warranty of
-		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-		GNU Lesser General Public License for more details.
-		
-		You should have received a copy of the GNU Lesser General Public License
-		along with this program.  If not, see <http://www.gnu.org/licenses/>.
-	*/
-	/* 
-		php5.4 ver by abbychau
-	*/
+	//	2008-2012 Sergey Tsalkov (stsalkov@gmail.com)
+	//	GNUL V3+ <http://www.gnu.org/licenses/> 
+	//	php5.4 ver by abbychau (abbychau@gmail.com) @ 2015 
 	
 	class DB {
 		// initial connection
@@ -355,11 +339,7 @@
 			$text = call_user_func_array(array($this, 'parseQueryParams'), $args);
 			return new MeekroDBEval($text);
 		}
-		
-		public function columnList($table) {
-			return $this->queryOneColumn('Field', "SHOW COLUMNS FROM %b", $table);
-		}
-		
+				
 		public function tableList($db = null) {
 			if ($db) {
 				$olddb = $this->current_db;
@@ -720,25 +700,6 @@
 			
 			foreach ($results as $row) {
 				$ret[] = $row[0];
-			}
-			
-			return $ret;
-		}
-		
-		public function queryOneColumn() {
-			$args = func_get_args();
-			$column = array_shift($args);
-			$results = call_user_func_array(array($this, 'query'), $args);
-			$ret = [];
-			
-			if (!count($results) || !count($results[0])) return $ret;
-			if ($column === null) {
-				$keys = array_keys($results[0]);
-				$column = $keys[0];
-			}
-			
-			foreach ($results as $row) {
-				$ret[] = $row[$column];
 			}
 			
 			return $ret;
