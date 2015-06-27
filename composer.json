@@ -1,7 +1,7 @@
 {
-    "name": "SergeyTsalkov/meekrodb",
+    "name": "meekro4php5.4",
     "description": "The Simple PHP/MySQL Library",
-    "homepage": "http://www.meekro.com",
+    "homepage": "https://github.com/abbychau/meekrodb",
     "support": {
         "email": "support@meekro.com"
     },
@@ -14,12 +14,11 @@
     "license": "LGPL-3.0",
     "authors": [
         {
-            "name": "Sergey Tsalkov",
-            "email": "stsalkov@gmail.com"
+            "name": "Sergey Tsalkov / Abby Chau"
         }
     ],
     "require": {
-        "php": ">=5.2.0"
+        "php": ">=5.4.0"
     },
     "autoload": {
         "classmap": [
