@@ -1,28 +1,35 @@
 {
-    "name": "meekro4php5.4",
+    "name": "ronisaha/meekro4php5.3",
     "description": "The Simple PHP/MySQL Library",
-    "homepage": "https://github.com/abbychau/meekrodb",
-    "support": {
-        "email": "support@meekro.com"
-    },
-    "keywords": [
-        "mysql",
-        "database",
-        "mysqli",
-        "pdo"
-    ],
+    "type": "library",
+    "homepage": "https://github.com/ronisaha/meekrodb",
+    "keywords": [ "mysql", "database", "mysqli", "pdo" ],
     "license": "LGPL-3.0",
     "authors": [
         {
-            "name": "Sergey Tsalkov / Abby Chau"
+            "name": "Sergey Tsalkov",
+            "email": "stsalkov@gmail.com"
+        },
+        {
+            "name": "Abby Chau",
+            "email": "abbychau@gmail.com"
+        },
+        {
+            "name": "Roni Saha",
+            "email": "roni.cse@gmail.com"
         }
     ],
-    "require": {
-        "php": ">=5.4.0"
-    },
     "autoload": {
-        "classmap": [
-            "db.class.php"
-        ]
+        "psr-0": {
+            "Meekro\\": ["src"]
+        }
+    },
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
     }
 }
