@@ -35,7 +35,6 @@ require __DIR__ . '/meekrodb/autoload.php';
 
 ### Configuration
 
-    require_once 'autoload.php';
     use Meekro\DB;
     
     DB::$user = 'my_database_user';
@@ -44,52 +43,43 @@ require __DIR__ . '/meekrodb/autoload.php';
 
 Quick Doc / example
 ========
-### Selects
-    //array
+### Grab some rows from the database and print out a field from each row.
+
     $accounts = DB::query("SELECT * FROM accounts WHERE type = %s AND age > %i", $type, 15);
     foreach ($accounts as $account) {
       echo $account['username'] . "\n";
     }
-	
-	//row
-	$account = DB::queryFirstRow("SELECT * FROM accounts WHERE username=%s", 'Joe');
-	
-	//field
-	$number_accounts = DB::queryFirstField("SELECT COUNT(*) FROM accounts");
-	
+
 ### Insert a new row.
 
-    DB::insert('mytable', [
+    DB::insert('mytable', array(
       'name' => $name,
       'rank' => $rank,
       'location' => $location,
       'age' => $age,
       'intelligence' => $intelligence
-    ]);
+    ));
     
-    DB::query("INSERT INTO %b %lb VALUES %ll?", 'accounts',
-      ['username', 'password', 'last_login_timestamp'],
-      [
-        ['Joe', 'joes_password', new DateTime('yesterday')],
-        ['Frank', 'franks_password', new DateTime('last Monday')]
-      ]
-    );
-	
-### Array in WHERE clause
-	DB::query("SELECT * FROM tbl WHERE name IN %ls AND age NOT IN %li", ['John', 'Bob'], [12, 15]);
+### Grab one row or field
 
-### Easy Nested transactions
+	$account = DB::row("SELECT * FROM accounts WHERE username=%s", 'Joe');
+	$number_accounts = DB::field("SELECT COUNT(*) FROM accounts");
 
-	DB::$nested_transactions = true;
+### Use a list in a query
+	DB::query("SELECT * FROM tbl WHERE name IN %ls AND age NOT IN %li", array('John', 'Bob'), array(12, 15));
+
+### Nested Transactions
+
+    Config::$nested_transactions = true;
     DB::startTransaction(); // outer transaction
-	// .. some queries..
-	
-		$depth = DB::startTransaction(); // inner transaction
-		echo $depth . 'transactions are currently active'; // 2
-		 
-		// .. some queries..
-		DB::commit(); // commit inner transaction
-		
+    // .. some queries..
+    $depth = DB::startTransaction(); // inner transaction
+    echo $depth . 'transactions are currently active'; // 2
+     
+    // .. some queries..
+    DB::commit(); // commit inner transaction
     // .. some queries..
     DB::commit(); // commit outer transaction
+    
+### Lots More - See: http://www.meekro.com/docs.php
 
