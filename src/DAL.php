@@ -77,10 +77,10 @@ class DAL {
     public function transactionDepth() { return $this->nested_transactions_count; }
     public function insertId() { return $this->insert_id; }
     public function affectedRows() { return $this->affected_rows; }
-    public function count() { $args = func_get_args(); return call_user_func_array([$this, 'numRows'], $args); }
+    public function count() { $args = func_get_args(); return call_user_func_array(array($this, 'numRows'), $args); }
     public function numRows() { return $this->num_rows; }
 
-    public function useDB() { $args = func_get_args(); return call_user_func_array([$this, 'setDB'], $args); }
+    public function useDB() { $args = func_get_args(); return call_user_func_array(array($this, 'setDB'), $args); }
     public function setDB($dbName) {
         $db = $this->get();
 
@@ -151,7 +151,7 @@ class DAL {
     protected function formatTableName($table) {
         $table = trim($table, '`');
 
-        if (strpos($table, '.')) return implode('.', array_map([$this, 'formatTableName'], explode('.', $table)));
+        if (strpos($table, '.')) return implode('.', array_map(array($this, 'formatTableName'), explode('.', $table)));
         else return '`' . str_replace('`', '``', $table) . '`';
     }
 
@@ -166,12 +166,12 @@ class DAL {
         array_unshift($args, $params);
         array_unshift($args, $table);
         array_unshift($args, $query);
-        return call_user_func_array([$this, 'query'], $args);
+        return call_user_func_array(array($this, 'query'), $args);
     }
 
-    public function insertOrReplace($which, $table, $datas, $options=[]) {
+    public function insertOrReplace($which, $table, $datas, $options= array()) {
         $datas = unserialize(serialize($datas)); // break references within array
-        $keys = $values = [];
+        $keys = $values = array();
 
         if (isset($datas[0]) && is_array($datas[0])) {
             $var = '%ll?';
@@ -196,11 +196,11 @@ class DAL {
                     $table, $keys, $values, $options['update']);
             } else {
                 $update_str = array_shift($options['update']);
-                $query_param = [
+                $query_param = array(
                     str_replace('%', Config::$param_char, "INSERT INTO %b %lb VALUES $var ON DUPLICATE KEY UPDATE ") . $update_str,
-                    $table, $keys, $values];
+                    $table, $keys, $values);
                 $query_param = array_merge($query_param, $options['update']);
-                return call_user_func_array([$this, 'query'], $query_param);
+                return call_user_func_array(array($this, 'query'), $query_param);
             }
 
         }
@@ -211,7 +211,7 @@ class DAL {
     }
 
     public function insert($table, $data) { return $this->insertOrReplace('INSERT', $table, $data); }
-    public function insertIgnore($table, $data) { return $this->insertOrReplace('INSERT', $table, $data, ['ignore' => true]); }
+    public function insertIgnore($table, $data) { return $this->insertOrReplace('INSERT', $table, $data, array('ignore' => true)); }
     public function replace($table, $data) { return $this->insertOrReplace('REPLACE', $table, $data); }
 
     public function insertUpdate() {
@@ -230,7 +230,7 @@ class DAL {
         if (is_array($args[0])) $update = $args[0];
         else $update = $args;
 
-        return $this->insertOrReplace('INSERT', $table, $data, ['update' => $update]);
+        return $this->insertOrReplace('INSERT', $table, $data, array('update' => $update));
     }
 
     public function delete() {
@@ -239,11 +239,26 @@ class DAL {
         $where = array_shift($args);
         $buildquery = "DELETE FROM $table WHERE $where";
         array_unshift($args, $buildquery);
-        return call_user_func_array([$this, 'query'], $args);
+        return call_user_func_array(array($this, 'query'), $args);
     }
 
     public function sqleval() {
-        return new DBEval(call_user_func_array([$this, 'parseQueryParams'], func_get_args()));
+        return new DBEval(call_user_func_array(array($this, 'parseQueryParams'), func_get_args()));
+    }
+
+    public function columnList($table) {
+        return $this->column('Field', "SHOW COLUMNS FROM %b", $table);
+    }
+
+    public function tableList($db = null) {
+        if ($db) {
+            $olddb = $this->dbName;
+            $this->useDB($db);
+        }
+
+        $result = $this->column('SHOW TABLES');
+        if (isset($olddb)) $this->useDB($olddb);
+        return $result;
     }
 
     protected function preparseQueryParams() {
@@ -251,12 +266,12 @@ class DAL {
         $sql = trim(strval(array_shift($args)));
         $args_all = $args;
 
-        if (count($args_all) == 0) return [$sql];
+        if (count($args_all) == 0) return array($sql);
 
         $param_char_length = strlen(Config::$param_char);
         $named_seperator_length = strlen(Config::$named_param_seperator);
 
-        $types = [
+        $types = array(
             Config::$param_char . 'll', // list of literals
             Config::$param_char . 'ls', // list of strings
             Config::$param_char . 'l',  // literal
@@ -276,11 +291,11 @@ class DAL {
             Config::$param_char . 'ha',  // hash `key`='value' pairs separated by and
             Config::$param_char . 'ho',  // hash `key`='value' pairs separated by or
             Config::$param_char . 'ss'  // search string (like string, surrounded with %'s)
-        ];
+        );
 
         // generate list of all MeekroDB variables in our query, and their position
         // in the form "offset => variable", sorted by offsets
-        $posList = [];
+        $posList = array();
         foreach ($types as $type) {
             $lastPos = 0;
             while (($pos = strpos($sql, $type, $lastPos)) !== false) {
@@ -293,7 +308,7 @@ class DAL {
         ksort($posList);
 
         // for each MeekroDB variable, substitute it with [type: i, value: 53] or whatever
-        $chunkyQuery = []; // preparsed query
+        $chunkyQuery = array(); // preparsed query
         $pos_adj = 0; // how much we've added or removed from the original sql string
         foreach ($posList as $pos => $type) {
             $type = substr($type, $param_char_length); // variable, without % in front of it
@@ -331,10 +346,10 @@ class DAL {
             if (is_object($arg) && ($arg instanceof Where)) {
                 list($clause_sql, $clause_args) = $arg->textAndArgs();
                 array_unshift($clause_args, $clause_sql);
-                $preparsed_sql = call_user_func_array([$this, 'preparseQueryParams'], $clause_args);
+                $preparsed_sql = call_user_func_array(array($this, 'preparseQueryParams'), $clause_args);
                 $chunkyQuery = array_merge($chunkyQuery, $preparsed_sql);
             } else {
-                $chunkyQuery[] = ['type' => $type, 'value' => $arg];
+                $chunkyQuery[] = array('type' => $type, 'value' => $arg);
             }
 
             $sql = substr($sql, $new_pos_back + $arg_number_length);
@@ -366,13 +381,13 @@ class DAL {
         } else if ($type == 'list') {
             if (is_array($value)) {
                 $value = array_values($value);
-                return '(' . implode(', ', array_map([$this, 'sanitize'], $value)) . ')';
+                return '(' . implode(', ', array_map(array($this, 'sanitize'), $value)) . ')';
             } else {
                 return DB::nonSQLError("Expected array parameter, got something different!");
             }
         } else if ($type == 'doublelist') {
             if (is_array($value) && array_values($value) === $value && is_array($value[0])) {
-                $cleanvalues = [];
+                $cleanvalues = array();
                 foreach ($value as $subvalue) {
                     $cleanvalues[] = $this->sanitize($subvalue, 'list');
                 }
@@ -383,7 +398,7 @@ class DAL {
             }
         } else if ($type == 'hash') {
             if (is_array($value)) {
-                $pairs = [];
+                $pairs = array();
                 foreach ($value as $k => $v) {
                     $pairs[] = $this->formatTableName($k) . '=' . $this->sanitize($v);
                 }
@@ -411,10 +426,10 @@ class DAL {
 
     public function parseQueryParams() {
         $args = func_get_args();
-        $chunkyQuery = call_user_func_array([$this, 'preparseQueryParams'], $args);
+        $chunkyQuery = call_user_func_array(array($this, 'preparseQueryParams'), $args);
 
         $query = '';
-        $array_types = ['ls', 'li', 'ld', 'lb', 'll', 'lt', 'l?', 'll?', 'hc', 'ha', 'ho'];
+        $array_types = array('ls', 'li', 'ld', 'lb', 'll', 'lt', 'l?', 'll?', 'hc', 'ha', 'ho');
 
         foreach ($chunkyQuery as $chunk) {
             if (is_string($chunk)) {
@@ -435,15 +450,15 @@ class DAL {
             else if ($type == 'd') $result = doubleval($arg);
             else if ($type == 'b') $result = $this->formatTableName($arg);
             else if ($type == 'l') $result = $arg;
-            else if ($type == 'ss') $result = $this->escape("%" . str_replace(['%', '_'], ['\%', '\_'], $arg) . "%");
+            else if ($type == 'ss') $result = $this->escape("%" . str_replace(array('%', '_'), array('\%', '\_'), $arg) . "%");
             else if ($type == 't') $result = $this->escape($this->parseTS($arg));
 
-            else if ($type == 'ls') $result = array_map([$this, 'escape'], $arg);
-            else if ($type == 'li') $result = array_map([$this, 'intval'], $arg);
+            else if ($type == 'ls') $result = array_map(array($this, 'escape'), $arg);
+            else if ($type == 'li') $result = array_map(array($this, 'intval'), $arg);
             else if ($type == 'ld') $result = array_map('doubleval', $arg);
-            else if ($type == 'lb') $result = array_map([$this, 'formatTableName'], $arg);
+            else if ($type == 'lb') $result = array_map(array($this, 'formatTableName'), $arg);
             else if ($type == 'll') $result = $arg;
-            else if ($type == 'lt') $result = array_map([$this, 'escape'], array_map([$this, 'parseTS'], $arg));
+            else if ($type == 'lt') $result = array_map(array($this, 'escape'), array_map(array($this, 'parseTS'), $arg));
 
             else if ($type == '?') $result = $this->sanitize($arg);
             else if ($type == 'l?') $result = $this->sanitize($arg, 'list');
@@ -463,11 +478,12 @@ class DAL {
     }
 
     protected function prependCall($function, $args, $prepend) { array_unshift($args, $prepend); return call_user_func_array($function, $args); }
-    public function query() { $args = func_get_args(); return $this->prependCall([$this, 'queryHelper'], $args, 'assoc'); }
-    public function queryAllLists() { $args = func_get_args(); return $this->prependCall([$this, 'queryHelper'], $args, 'list'); }
+    public function query() { $args = func_get_args(); return $this->prependCall(array($this, 'queryHelper'), $args, 'assoc'); }
+    public function queryAllLists() { $args = func_get_args(); return $this->prependCall(array($this, 'queryHelper'), $args, 'list'); }
+    public function queryFullColumns() { $args = func_get_args(); return $this->prependCall(array($this, 'queryHelper'), $args, 'full'); }
 
-    public function queryRaw() { $args = func_get_args(); return $this->prependCall([$this, 'queryHelper'], $args, 'raw_buf'); }
-    public function queryRawUnbuf() { $args = func_get_args(); return $this->prependCall([$this, 'queryHelper'], $args, 'raw_unbuf'); }
+    public function queryRaw() { $args = func_get_args(); return $this->prependCall(array($this, 'queryHelper'), $args, 'raw_buf'); }
+    public function queryRawUnbuf() { $args = func_get_args(); return $this->prependCall(array($this, 'queryHelper'), $args, 'raw_unbuf'); }
 
     protected function queryHelper() {
         $args = func_get_args();
@@ -495,7 +511,7 @@ class DAL {
                 return DB::nonSQLError('Error -- invalid argument to queryHelper!');
         }
 
-        $sql = call_user_func_array([$this, 'parseQueryParams'], $args);
+        $sql = call_user_func_array(array($this, 'parseQueryParams'), $args);
 
         if (Config::$success_handler) {
             $starttime = microtime(true);
@@ -514,12 +530,12 @@ class DAL {
             if (Config::$error_handler) {
                 $error_handler = is_callable(Config::$error_handler) ? Config::$error_handler : __NAMESPACE__ .'\DB::debugModeHandler';
 
-                call_user_func($error_handler, [
+                call_user_func($error_handler, array(
                     'type' => 'sql',
                     'query' => $sql,
                     'error' => $db->error,
                     'code' => $db->errno
-                ]);
+                ));
             }
 
             if (Config::$throw_exception_on_error) {
@@ -528,13 +544,13 @@ class DAL {
             }
         } else if (Config::$success_handler) {
             $runtime = sprintf('%f', $runtime * 1000);
-            $success_handler = is_callable(Config::$success_handler) ?  : __NAMESPACE__ .'\DB::debugModeHandler';
+            $success_handler = is_callable(Config::$success_handler) ? Config::$success_handler : __NAMESPACE__ .'\DB::debugModeHandler';
 
-            call_user_func($success_handler, [
+            call_user_func($success_handler, array(
                 'query' => $sql,
                 'runtime' => $runtime,
                 'affected' => $db->affected_rows
-            ]);
+            ));
         }
 
         // ----- END ERROR HANDLING
@@ -548,9 +564,9 @@ class DAL {
 
         if ($row_type == 'raw' || !($result instanceof \mysqli_result)) return $result;
 
-        $return = [];
+        $return = array();
 
-        $infos = [];
+        $infos = array();
         if ($full_names) {
             foreach ($result->fetch_fields() as $info) {
                 if (strlen($info->table)) $infos[] = $info->table . '.' . $info->name;
@@ -575,15 +591,15 @@ class DAL {
 
     public function row() {
         $args = func_get_args();
-        $result = call_user_func_array([$this, 'query'], $args);
+        $result = call_user_func_array(array($this, 'query'), $args);
         if (!$result || !is_array($result)) return null;
         return reset($result);
     }
 
     public function column() {
         $args = func_get_args();
-        $results = call_user_func_array([$this, 'queryAllLists'], $args);
-        $ret = [];
+        $results = call_user_func_array(array($this, 'queryAllLists'), $args);
+        $ret = array();
 
         if (!count($results) || !count($results[0])) return $ret;
 
@@ -596,7 +612,7 @@ class DAL {
 
     public function field() {
         $args = func_get_args();
-        $row = call_user_func_array([$this, 'row'], $args);
+        $row = call_user_func_array(array($this, 'row'), $args);
         if ($row == null) return null;
         return reset($row);
     }

@@ -27,7 +27,7 @@ class DB
 
     public static function __callStatic($name, $args)
     {
-        return call_user_func_array([DB::getInstance(), $name], $args);
+        return call_user_func_array(array(DB::getInstance(), $name), $args);
     }
 
     public static function debugMode($handler = true)
@@ -44,10 +44,10 @@ class DB
 
         $error_handler = is_callable(Config::$nonsql_error_handler) ? Config::$nonsql_error_handler : __NAMESPACE__ . '\DB::errorHandler';
 
-        call_user_func($error_handler, [
+        call_user_func($error_handler, array(
             'type' => 'nonsql',
             'error' => $message
-        ]);
+        ));
     }
 
     public static function errorHandler($params)

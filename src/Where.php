@@ -5,7 +5,7 @@ namespace Meekro;
 class Where {
     public $type = 'and'; //AND or OR
     public $negate = false;
-    public $clauses = [];
+    public $clauses = array();
 
     function __construct($type) {
         $type = strtolower($type);
@@ -20,7 +20,7 @@ class Where {
         if ($sql instanceof Where) {
             $this->clauses[] = $sql;
         } else {
-            $this->clauses[] = ['sql' => $sql, 'args' => $args];
+            $this->clauses[] = array('sql' => $sql, 'args' => $args);
         }
     }
 
@@ -50,10 +50,10 @@ class Where {
     }
 
     function textAndArgs() {
-        $sql = [];
-        $args = [];
+        $sql = array();
+        $args = array();
 
-        if (count($this->clauses) == 0) return ['(1)', $args];
+        if (count($this->clauses) == 0) return array('(1)', $args);
 
         foreach ($this->clauses as $clause) {
             if ($clause instanceof Where) {
@@ -71,7 +71,7 @@ class Where {
         else $sql = implode(' OR ', $sql);
 
         if ($this->negate) $sql = '(NOT ' . $sql . ')';
-        return [$sql, $args];
+        return array($sql, $args);
     }
     // backwards compatability
     // we now return full Where object here and evaluate it in preparseQueryParams

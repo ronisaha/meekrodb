@@ -14,6 +14,6 @@ class Config
     public static $throw_exception_on_nonsql_error = false;
     public static $nested_transactions = false;
     public static $usenull = true;
-    public static $ssl = ['key' => '', 'cert' => '', 'ca_cert' => '', 'ca_path' => '', 'cipher' => ''];
-    public static $connect_options = [MYSQLI_OPT_CONNECT_TIMEOUT => 30];
+    public static $ssl = array('key' => '', 'cert' => '', 'ca_cert' => '', 'ca_path' => '', 'cipher' => '');
+    public static $connect_options = array(MYSQLI_OPT_CONNECT_TIMEOUT => 30);
 }

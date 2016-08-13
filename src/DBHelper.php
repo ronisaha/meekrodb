@@ -12,7 +12,7 @@ class DBHelper {
     public static function verticalSlice($array, $field, $keyfield = null) {
         $array = (array) $array;
 
-        $R = [];
+        $R = array();
         foreach ($array as $obj) {
             if (! array_key_exists($field, $obj)) die("verticalSlice: array doesn't have requested field\n");
 
@@ -36,7 +36,7 @@ class DBHelper {
         $array = array_shift($fields);
         $array = (array) $array;
 
-        $R = [];
+        $R = array();
         foreach ($array as $obj) {
             $target =& $R;
 
